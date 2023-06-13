@@ -24,6 +24,19 @@ class CreateMemberAPIRequest extends APIRequest
      */
     public function rules()
     {
-        return Member::$rules;
+        return [
+            'name' => 'required|max:25|regex:[^[a-zA-Z0-9\\s]*$]|unique:members,name,NULL,id,deleted_at,NULL',
+            'contact_no' => ['max:12', "unique:members,contact_no,NULL,id,deleted_at,NULL"],
+            'address' => 'nullable|max:100',
+        ];
+    }
+    
+    public function messages()
+    {
+        return [
+            'name.unique' => 'Member Name already exist!',
+            'name.required' => 'Member Name reqiured!',
+            'contact_no.unique' => 'Member Contact No already exist!',
+        ];
     }
 }

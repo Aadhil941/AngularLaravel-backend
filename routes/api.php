@@ -22,29 +22,8 @@ Route::resource('signUp', App\Http\Controllers\API\UserAPIController::class);
 Route::post('/signUp', [App\Http\Controllers\API\UserAPIController::class, 'store']);
 
 Route::group(['middleware' => ['auth:api']], function () {
-    // Route::post('/signIn', [App\Http\Controllers\API\UserAPIController::class, 'store']);
-
     Route::resource('users', App\Http\Controllers\API\UserAPIController::class);
+    Route::resource('members', App\Http\Controllers\API\MemberAPIController::class);
+    Route::post('/add-member', [App\Http\Controllers\API\MemberAPIController::class, 'store']);
+    Route::get('/get-members', [App\Http\Controllers\API\MemberAPIController::class, 'getMembers']);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,13 +7,43 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class Member
- * @package App\Models
- * @version May 18, 2023, 5:32 pm UTC
- *
- * @property string $name
- * @property string $contact_no
- * @property string $address
+ * @SWG\Definition(
+ *      definition="Member",
+ *      required={"name"},
+ *      @SWG\Property(
+ *          property="id",
+ *          description="id",
+ *          type="integer",
+ *          format="int32"
+ *      ),
+ *      @SWG\Property(
+ *          property="name",
+ *          description="name",
+ *          type="string"
+ *      ),
+ *      @SWG\Property(
+ *          property="contact_no",
+ *          description="contact_no",
+ *          type="string"
+ *      ),
+ *      @SWG\Property(
+ *          property="address",
+ *          description="address",
+ *          type="string"
+ *      ),
+ *      @SWG\Property(
+ *          property="created_at",
+ *          description="created_at",
+ *          type="string",
+ *          format="date-time"
+ *      ),
+ *      @SWG\Property(
+ *          property="updated_at",
+ *          description="updated_at",
+ *          type="string",
+ *          format="date-time"
+ *      )
+ * )
  */
 class Member extends Model
 {
@@ -34,7 +64,10 @@ class Member extends Model
     public $fillable = [
         'name',
         'contact_no',
-        'address'
+        'address',
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     /**
@@ -46,7 +79,10 @@ class Member extends Model
         'id' => 'integer',
         'name' => 'string',
         'contact_no' => 'string',
-        'address' => 'string'
+        'address' => 'string',
+        'created_by' => 'integer',
+        'updated_by' => 'integer',
+        'deleted_by' => 'integer',
     ];
 
     /**
@@ -58,9 +94,24 @@ class Member extends Model
         'name' => 'required|string|max:255',
         'contact_no' => 'nullable|string|max:255',
         'address' => 'nullable|string|max:255',
+        'created_by' => 'nullable',
+        'updated_by' => 'nullable',
+        'deleted_by' => 'nullable',
         'created_at' => 'nullable',
         'updated_at' => 'nullable'
     ];
 
-    
+    public function created_user()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function getAllMembers($sortOrder, $perPage, $sortBy)
+    {
+        $query = Member::with(['created_user' => function ($q) {
+            $q->select('id', 'name');
+        }])->select('*')->orderBy($sortBy, $sortOrder);
+
+        return $query->paginate($perPage);
+    }
 }
